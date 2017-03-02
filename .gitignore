@@ -41,3 +41,4 @@ qa.hawk/resources/qald-4_hybrid_train.xml
 qa.hawk/results.html
 qa.hawk/resources/qald-4_hybrid_train.xml
 qa.annotation/resources/*
+ranking/

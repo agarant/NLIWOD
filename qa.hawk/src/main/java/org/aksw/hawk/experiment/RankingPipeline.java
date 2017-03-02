@@ -1,10 +1,7 @@
 package org.aksw.hawk.experiment;
 
-import java.io.IOException;
-import java.util.List;
-
-import javax.xml.parsers.ParserConfigurationException;
-
+import com.google.common.base.Joiner;
+import edu.stanford.nlp.util.Sets;
 import org.aksw.hawk.controller.AbstractPipeline;
 import org.aksw.hawk.controller.EvalObj;
 import org.aksw.hawk.controller.PipelineStanford;
@@ -19,7 +16,12 @@ import org.aksw.qa.commons.load.LoaderController;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.common.base.Joiner;
+import javax.xml.parsers.ParserConfigurationException;
+import java.io.IOException;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 /**
  * F@N + all ranking experiments for ESWC 2015 publication Possibly extendible
@@ -63,22 +65,22 @@ public class RankingPipeline {
 				// finalAnswer = answer.get(query);
 				// this.ranker.learn(q, correctQueries);
 
-				// feature-based ranking
-				// log.info("Feature-based ranking begins training.");
-				// for (Set<Feature> featureSet : Sets.powerSet(new
-				// HashSet<>(Arrays.asList(Feature.values())))) {
-				// if (!featureSet.isEmpty()) {
-				// log.debug("Feature-based ranking: " + featureSet.toString());
-				// feature_ranker.setFeatures(featureSet);
-				// feature_ranker.train();
-				// rankedAnswer = feature_ranker.rank(answers, q);
-				// eval = Measures.measure(rankedAnswer, q,
-				// maximumPositionToMeasure);
-				// log.debug(Joiner.on("\n\t").join(eval));
-				// }
-				// }
+				 // feature-based ranking
+				 log.info("Feature-based ranking begins training.");
+				 for (Set<FeatureBasedRanker.Feature> featureSet : Sets.powerSet(new
+						 HashSet<>(Arrays.asList(FeatureBasedRanker.Feature.values())))) {
+					 if (!featureSet.isEmpty()) {
+						 log.debug("Feature-based ranking: " + featureSet.toString());
+						 feature_ranker.setFeatures(featureSet);
+						 feature_ranker.train();
+						 List<Answer> rankedAnswer = feature_ranker.rank(answers, q);
+						 List<EvalObj> eval = Measures.measure(rankedAnswer, q, maximumPositionToMeasure);
+						 log.debug(Joiner.on("\n\t").join(eval));
+					 }
+				 }
 
 				// bucket-based ranking
+
 				log.info("Bucket-based ranking");
 				List<Answer> rankedAnswer = bucket_ranker.rank(answers, q);
 				List<EvalObj> eval = Measures.measure(rankedAnswer, q, maximumPositionToMeasure);
