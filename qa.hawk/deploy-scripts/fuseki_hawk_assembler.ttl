@@ -24,15 +24,28 @@ tdb:GraphTDB    rdfs:subClassOf  ja:Model .
 [] ja:loadClass "org.apache.jena.query.text.TextQuery" .
 text:TextDataset      rdfs:subClassOf   ja:RDFDataset .
 text:TextIndexLucene  rdfs:subClassOf   text:TextIndex .
+text:TextIndexSolr    rdfs:subClassOf   text:TextIndex .
 
 ## ---------------------------------------------------------------
 :text_dataset rdf:type     text:TextDataset ;
     text:dataset   :dataset ;
-    text:index     :indexLucene ;
+    text:index  :indexSolr ;
+    # text:index     :indexLucene ;
     .
 
 :dataset rdf:type      tdb:DatasetTDB ;
     tdb:location "data/hawk_data_04-2016_dbpediatbd" ;
+    .
+
+:indexSolr at text:TextIndexSolr ;
+    text:server <http://0a928891.ngrok.io/solr/#/collection1/query> ;
+    text:entityMap :entMapSolr ;
+    .
+
+:entMapSolr a text:EntityMap ;
+    # URI stored in field "url"
+    text:entityField    "url" ;
+    text:defaultField   "text";
     .
 
 :indexLucene a text:TextIndexLucene ;
