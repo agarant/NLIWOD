@@ -27,7 +27,7 @@ public class EvalObj {
 
 	@Override
 	public String toString() {
-		return "EvalObj [comment=" + comment + ", fmax=" + fmax + ", pmax=" + pmax + ", rmax=" + rmax + ", question=" + question + ", id=" + id + "]";
+		return "EvalObj [comment=" + comment + ", fmax=" + fmax + ", precision=" + pmax + ", recall=" + rmax + ", question=" + question + ", id=" + id + "]";
 	}
 
 	public String getId() {

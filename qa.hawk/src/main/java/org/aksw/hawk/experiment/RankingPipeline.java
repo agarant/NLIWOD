@@ -87,7 +87,7 @@ public class RankingPipeline {
 				log.info(Joiner.on("\n\t").join(eval));
 
 				// this.qw.write(finalAnswer);
-				// evals.add(new EvalObj(q.id, question, fmax, pmax, rmax,
+				// evals.add(new EvalObj(q.id, question, fmax, precision, recall,
 				// "Assuming Optimal Ranking Function, Spotter: " +
 				// nerdModule.toString()));
 			}

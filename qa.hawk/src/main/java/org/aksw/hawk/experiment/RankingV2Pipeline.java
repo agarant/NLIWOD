@@ -13,27 +13,30 @@ import org.aksw.qa.commons.load.LoaderController;
 
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class RankingV2Pipeline {
     public static void main(String args[]) {
         AbstractPipeline pipeline = new PipelineStanford();
 
-        List<HAWKQuestion> pipelineQuestions = loadQuestions(Dataset.QALD6_Train_Multilingual);
-
-        List<HAWKQuestion> filteredQuestions = pipelineQuestions
-                .stream()
-                .filter(RankingV2Pipeline::questionOfInterest)
-                .collect(Collectors.toList());
+        Stream<HAWKQuestion> pipelineQuestions = loadQuestions(Dataset.QALD6_Test_Hybrid)
+          .stream()
+          .filter(RankingV2Pipeline::questionOfInterest)
+          .limit(3);
 
         FeatureBasedRankerV2 rankerV2 = new FeatureBasedRankerV2();
-        filteredQuestions
-                .forEach(q -> {
+        List<List<EvalObj>> evaluations = pipelineQuestions
+                .map(q -> {
                     List<Answer> answers = pipeline.getAnswersToQuestion(q);
                     List<Answer> rankedAnswers = rankerV2.rank(answers, q);
-                    List<EvalObj> evaluations = Measures.measure(rankedAnswers, q, 10);
-                    int a = 4;
-                });
+                    return Measures.measure(rankedAnswers, q, 10);
+                })
+                .filter(list -> list.size() > 0)
+                .collect(Collectors.toList());
 
+        EvaluationReport report = new EvaluationReport(evaluations);
+        EvaluationMetrics best = report.getBest();
+        EvaluationMetrics averaged = report.getAveraged();
     }
 
 
