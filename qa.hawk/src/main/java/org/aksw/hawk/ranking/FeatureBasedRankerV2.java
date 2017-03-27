@@ -3,7 +3,6 @@ package org.aksw.hawk.ranking;
 import com.google.common.collect.Maps;
 import org.aksw.hawk.datastructures.Answer;
 import org.aksw.hawk.datastructures.HAWKQuestion;
-import org.aksw.qa.commons.datastructure.IQuestion;
 import org.aksw.qa.commons.sparql.SPARQLQuery;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -12,16 +11,18 @@ import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-public class FeatureBasedRankerV2 implements Ranking {
-    public enum Feature {
+public class FeatureBasedRankerV2 implements Ranking, Ranker {
+    private static Logger log = LoggerFactory.getLogger(FeatureBasedRankerV2.class);
+
+
+
+  public enum Feature {
         PREDICATES,
         PATTERN,
         NR_OF_CONSTRAINTS,
         NR_OF_TYPES,
         NR_OF_TERMS
     }
-
-    private static Logger log = LoggerFactory.getLogger(FeatureBasedRanker.class);
 
     private Map<String, Double> featuresVectors;
     private Collection<Feature> features;
@@ -30,27 +31,40 @@ public class FeatureBasedRankerV2 implements Ranking {
         this(new ArrayList<>(Arrays.asList(Feature.values())));
     }
 
-    public FeatureBasedRankerV2(Collection<Feature> features) {
+    private FeatureBasedRankerV2(Collection<Feature> features) {
         this.features = features;
         this.featuresVectors = generateFeaturesVector(features);
     }
 
-    public static void learn(final IQuestion q, final Set<SPARQLQuery> queries) {
-        FeatureBasedRankerDB.store(q, queries);
-    }
+  @Override
+  public SortedMap<Double, List<SPARQLQuery>> rank(HAWKQuestion q, List<SPARQLQuery> queries) {
+    SortedMap<Double, List<SPARQLQuery>> sortingBucket = new TreeMap<>();
+    queries.forEach(query -> {
+      Double score = scoreQuery(query);
+      if (!sortingBucket.containsKey(score)) {
+        sortingBucket.put(score, new ArrayList<>());
+      }
+      sortingBucket.get(score).add(query);
+    });
 
-    @SuppressWarnings({ "unchecked", "rawtypes" })
+    return sortingBucket;
+  }
+
     @Override
     public List<Answer> rank(final List<Answer> answers, final HAWKQuestion q) {
         return answers
             .stream()
             .map(answer -> {
-                Map<String, Double> ranking = calculateRanking(answer.query, this.features);
-                answer.score = cosinus(ranking, this.featuresVectors);
+                answer.score = scoreQuery(answer.query);
                 return answer;
             })
             .sorted((a1, a2) -> a2.score.compareTo(a1.score))
             .collect(Collectors.toList());
+    }
+
+    private Double scoreQuery(SPARQLQuery query) {
+      Map<String, Double> ranking = calculateRanking(query, this.features);
+      return cosinus(ranking, this.featuresVectors);
     }
 
 

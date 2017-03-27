@@ -21,9 +21,9 @@ import java.util.List;
 import java.util.Set;
 
 public class PipelineStanford extends AbstractPipeline {
-	static Logger log = LoggerFactory.getLogger(PipelineStanford.class);
+	private static Logger log = LoggerFactory.getLogger(PipelineStanford.class);
 	private final SparqlQueryRunner queryRunner;
-	private final SPARQLQueryPruner queryPrunner;
+	private final SPARQLQueryPruner queryPruner;
 	private ASpotter nerdModule;
 	private MutableTreePruner pruner;
 	private Annotater annotater;
@@ -35,71 +35,65 @@ public class PipelineStanford extends AbstractPipeline {
 	private NounCombinationChain nounCombination;
 
 	public PipelineStanford() {
+		SPARQL sparql = new SPARQL();
+
 		queryTypeClassifier = new QueryTypeClassifier();
-
 		nerdModule = new Spotlight();
-		// controller.nerdModule = new Spotlight();
-		// controller.nerdModule =new TagMe();
-		// controller.nerdModule = new MultiSpotter(fox, tagMe, wiki, spot);
-
-		this.stanfordConnector = new StanfordNLPConnector();
-		this.numberToDigit = new UnitController();
-
+		stanfordConnector = new StanfordNLPConnector();
+		numberToDigit = new UnitController();
 		numberToDigit.instantiateEnglish(stanfordConnector);
 		nounCombination = new NounCombinationChain(NounCombiners.HawkRules, NounCombiners.StanfordDependecy);
-
 		cardinality = new Cardinality();
-
 		pruner = new MutableTreePruner();
-
-		SPARQL sparql = new SPARQL();
 		annotater = new Annotater(sparql);
-
 		queryRunner = new SparqlQueryRunner(sparql);
-		queryPrunner = new SPARQLQueryPruner(sparql);
+		queryPruner = new SPARQLQueryPruner(sparql);
 	}
 
 	@Override
 	public List<Answer> getAnswersToQuestion(final HAWKQuestion q) {
-		log.info("Question: " + q.getLanguageToQuestion().get("en"));
-
-		log.info("Classify question type.");
-		q.setIsClassifiedAsASKQuery(queryTypeClassifier.isASKQuery(q.getLanguageToQuestion().get("en")));
-
-		// Disambiguate parts of the query
-		log.info("Named entity recognition.");
-		q.setLanguageToNamedEntites(nerdModule.getEntities(q.getLanguageToQuestion().get("en")));
-		// Noun combiner, decrease #nodes in the DEPTree
-		log.info("Noun phrase combination / Dependency Parsing");
-		// TODO make tlhis method return the combine sequence and work on this,
-		// i.e., q.sequence = sentenceToSequence.combineSequences(q);
-
-		// @Ricardo this will calculate cardinality of reduced(combinedNN) tree.
-		// is this right?
-		q.setTree(stanfordConnector.parseTree(q, this.numberToDigit));
-
-		nounCombination.runChain(q);
-
-		// Cardinality identifies the integer i used for LIMIT i
-		log.info("Cardinality calculation.");
-		q.setCardinality(cardinality.cardinality(q));
-
-		// Apply pruning rules
-		log.info("Pruning tree.");
-		q.setTree(pruner.prune(q));
-
-		// Annotate tree
-		log.info("Semantically annotating the tree.");
-		annotater.annotateTree(q);
-
-		// Calculating all possible SPARQL BGPs with given semantic annotations
-		log.info("Calculating SPARQL representations.");
-		Set<SPARQLQuery> queries = SparqlQueryBuilder.build(q);
-		Set<SPARQLQuery> prunedQueries = queryPrunner.prune(queries, q);
-		List<Answer> answers = queryRunner.run(prunedQueries);
-
-		return answers;
+		Set<SPARQLQuery> prunedQueries = getQueriesToQuestion(q);
+		return queryRunner.run(prunedQueries);
 	}
+
+	public Set<SPARQLQuery> getQueriesToQuestion(final HAWKQuestion q) {
+    log.info("Question: " + q.getLanguageToQuestion().get("en"));
+
+    log.info("Classify question type.");
+    q.setIsClassifiedAsASKQuery(queryTypeClassifier.isASKQuery(q.getLanguageToQuestion().get("en")));
+
+    // Disambiguate parts of the query
+    log.info("Named entity recognition.");
+    q.setLanguageToNamedEntites(nerdModule.getEntities(q.getLanguageToQuestion().get("en")));
+    // Noun combiner, decrease #nodes in the DEPTree
+    log.info("Noun phrase combination / Dependency Parsing");
+    // TODO make tlhis method return the combine sequence and work on this,
+    // i.e., q.sequence = sentenceToSequence.combineSequences(q);
+
+    // @Ricardo this will calculate cardinality of reduced(combinedNN) tree.
+    // is this right?
+    q.setTree(stanfordConnector.parseTree(q, this.numberToDigit));
+
+    nounCombination.runChain(q);
+
+    // Cardinality identifies the integer i used for LIMIT i
+    log.info("Cardinality calculation.");
+    q.setCardinality(cardinality.cardinality(q));
+
+    // Apply pruning rules
+    log.info("Pruning tree.");
+    q.setTree(pruner.prune(q));
+
+    // Annotate tree
+    log.info("Semantically annotating the tree.");
+    annotater.annotateTree(q);
+
+    // Calculating all possible SPARQL BGPs with given semantic annotations
+    log.info("Calculating SPARQL representations.");
+    Set<SPARQLQuery> queries = SparqlQueryBuilder.build(q);
+    return queryPruner.prune(queries, q);
+  }
+
 
 	public StanfordNLPConnector getStanfordConnector() {
 		return stanfordConnector;
