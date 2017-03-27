@@ -60,10 +60,10 @@ public class HAWKUtils {
 	 */
 	public static String replaceNamedEntitysWithURL(final HAWKQuestion q) {
 		String sentence = q.getLanguageToQuestion().get("en");
-		if (!q.getLanguageToNamedEntites().isEmpty()) {
+		/*if (!q.getLanguageToNamedEntites().isEmpty()) {
 			sentence = HAWKUtils.replaceLabelsByIdentifiedURIs(sentence, q.getLanguageToNamedEntites().get("en"));
 			log.debug(sentence);
-		}
+		}*/
 		if (!q.getLanguageToNounPhrases().isEmpty()) {
 			sentence = HAWKUtils.replaceLabelsByIdentifiedURIs(sentence, q.getLanguageToNounPhrases().get("en"));
 			log.debug(sentence);
