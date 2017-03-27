@@ -120,6 +120,7 @@ public class RecursiveSparqlQueryBuilder {
 					variant2.addFilterOverAbstractsContraint("?const", tmp.label);
 
 					SPARQLQuery variant3 = (SPARQLQuery) query.clone();
+					variant2.addConstraint("?proj  ?proot  ?const.");					
 
 					sb.add(variant1);
 					sb.add(variant2);
