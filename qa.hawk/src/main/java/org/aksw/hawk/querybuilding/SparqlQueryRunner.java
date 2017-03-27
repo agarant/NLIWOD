@@ -13,8 +13,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 
-public class SPARQLQueryRunner {
-	private static Logger log = LoggerFactory.getLogger(SPARQLQueryRunner.class);
+public class SparqlQueryRunner {
+	private static Logger log = LoggerFactory.getLogger(SparqlQueryRunner.class);
 	private SPARQL sparqlEndpoint;
 	
 	public SPARQLQueryRunner(SPARQL sparql) {
