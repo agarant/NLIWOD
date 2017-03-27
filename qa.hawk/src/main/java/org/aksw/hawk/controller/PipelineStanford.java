@@ -1,27 +1,32 @@
 package org.aksw.hawk.controller;
 
-import java.util.List;
-
 import org.aksw.hawk.datastructures.Answer;
 import org.aksw.hawk.datastructures.HAWKQuestion;
 import org.aksw.hawk.nlp.MutableTreePruner;
 import org.aksw.hawk.nouncombination.NounCombinationChain;
 import org.aksw.hawk.nouncombination.NounCombiners;
 import org.aksw.hawk.number.UnitController;
+import org.aksw.hawk.pruner.SPARQLQueryPruner;
 import org.aksw.hawk.querybuilding.Annotater;
-import org.aksw.hawk.querybuilding.SPARQLQueryBuilder;
+import org.aksw.hawk.querybuilding.SparqlQueryBuilder;
+import org.aksw.hawk.querybuilding.SparqlQueryRunner;
 import org.aksw.qa.annotation.spotter.ASpotter;
 import org.aksw.qa.annotation.spotter.Spotlight;
 import org.aksw.qa.commons.sparql.SPARQL;
+import org.aksw.qa.commons.sparql.SPARQLQuery;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.List;
+import java.util.Set;
+
 public class PipelineStanford extends AbstractPipeline {
 	static Logger log = LoggerFactory.getLogger(PipelineStanford.class);
+	private final SparqlQueryRunner queryRunner;
+	private final SPARQLQueryPruner queryPrunner;
 	private ASpotter nerdModule;
 	private MutableTreePruner pruner;
 	private Annotater annotater;
-	private SPARQLQueryBuilder queryBuilder;
 	private Cardinality cardinality;
 	private QueryTypeClassifier queryTypeClassifier;
 	private StanfordNLPConnector stanfordConnector;
@@ -50,7 +55,8 @@ public class PipelineStanford extends AbstractPipeline {
 		SPARQL sparql = new SPARQL();
 		annotater = new Annotater(sparql);
 
-		queryBuilder = new SPARQLQueryBuilder(sparql);
+		queryRunner = new SparqlQueryRunner(sparql);
+		queryPrunner = new SPARQLQueryPruner(sparql);
 	}
 
 	@Override
@@ -88,7 +94,9 @@ public class PipelineStanford extends AbstractPipeline {
 
 		// Calculating all possible SPARQL BGPs with given semantic annotations
 		log.info("Calculating SPARQL representations.");
-		List<Answer> answers = queryBuilder.build(q);
+		Set<SPARQLQuery> queries = SparqlQueryBuilder.build(q);
+		Set<SPARQLQuery> prunedQueries = queryPrunner.prune(queries, q);
+		List<Answer> answers = queryRunner.run(prunedQueries);
 
 		return answers;
 	}

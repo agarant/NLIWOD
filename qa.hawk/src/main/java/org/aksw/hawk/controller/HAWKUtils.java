@@ -24,7 +24,7 @@ public class HAWKUtils {
 	 */
 	public static String replaceLabelsByIdentifiedURIs(final String sentence, final List<Entity> list) {
 		/*
-		 * reverse list of entities to start replacing from the end of the
+		 * reverse list of entities to build replacing from the end of the
 		 * string so that replacing from the end won't mess up the order
 		 */
 		List<String> textParts = new ArrayList<>();

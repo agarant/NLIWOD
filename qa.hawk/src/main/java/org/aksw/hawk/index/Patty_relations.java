@@ -59,7 +59,7 @@ public class Patty_relations {
 			File indexDir = new File("resources/puttyRelations");
 			analyzer = new StandardAnalyzer(LUCENE_VERSION);
 			/*
-			 * if no index exists, start by creating one:
+			 * if no index exists, build by creating one:
 			 */
 			if (!indexDir.exists()) {
 				// create the directory where the index is stored
@@ -129,7 +129,7 @@ public class Patty_relations {
 	public HashSet<String> search(String object) {
 		ArrayList<String> uris = Lists.newArrayList();
 		try {
-			log.debug("\t start asking index...");
+			log.debug("\t build asking index...");
 
 			Query q = new FuzzyQuery(new Term(FIELD_NAME_OBJECT, object), 0);
 			TopScoreDocCollector collector = TopScoreDocCollector.create(numberOfDocsRetrievedFromIndex, true);

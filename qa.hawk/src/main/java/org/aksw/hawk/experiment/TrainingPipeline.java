@@ -20,6 +20,7 @@ import javax.xml.parsers.ParserConfigurationException;
 import java.io.IOException;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * F@N + all ranking experiments for ESWC 2015 publication Possibly extendible
@@ -42,6 +43,15 @@ public class TrainingPipeline {
 		double average = 0;
 		double count = 0;
 		double countNULLAnswer = 0;
+		OptimalRanker optimal_ranker_1 = new OptimalRanker();
+		List<List<Answer>> rankedAnswers = questions
+			.stream()
+			.map(q -> optimal_ranker_1.rank(pipeline.getAnswersToQuestion(q), q))
+			.peek(answers -> {
+				int a  =2;
+			})
+			.collect(Collectors.toList());
+
 		for (HAWKQuestion q : questions) {
 			if ((q.getAnswerType().equals("resource") & q.getOnlydbo() & !q.getAggregation()) || q.getLoadedAsASKQuery()) {
 				log.info("Run pipeline on " + q.getLanguageToQuestion().get("en"));

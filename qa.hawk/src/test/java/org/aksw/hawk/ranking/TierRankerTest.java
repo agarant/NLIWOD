@@ -16,7 +16,7 @@ import org.slf4j.LoggerFactory;
 import com.google.common.base.Joiner;
 
 public class TierRankerTest {
-	// TODO Christian: couldn't test, couldn't continue past SPARQLQueryBuilder
+	// TODO Christian: couldn't test, couldn't continue past SparqlQueryBuilderOld
 	static Logger log = LoggerFactory.getLogger(SingleQuestionPipeline.class);
 
 	@Test

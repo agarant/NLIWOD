@@ -19,10 +19,9 @@ public class RankingV2Pipeline {
     public static void main(String args[]) {
         AbstractPipeline pipeline = new PipelineStanford();
 
-        Stream<HAWKQuestion> pipelineQuestions = loadQuestions(Dataset.QALD6_Test_Hybrid)
+        Stream<HAWKQuestion> pipelineQuestions = loadQuestions(Dataset.QALD5_Train_Hybrid)
           .stream()
-          .filter(RankingV2Pipeline::questionOfInterest)
-          .limit(3);
+          .filter(RankingV2Pipeline::questionOfInterest);
 
         FeatureBasedRankerV2 rankerV2 = new FeatureBasedRankerV2();
         List<List<EvalObj>> evaluations = pipelineQuestions

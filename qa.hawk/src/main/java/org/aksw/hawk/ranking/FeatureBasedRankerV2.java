@@ -43,34 +43,34 @@ public class FeatureBasedRankerV2 implements Ranking {
     @Override
     public List<Answer> rank(final List<Answer> answers, final HAWKQuestion q) {
         return answers
-                .stream()
-                .map(answer -> {
-                    Map<String, Double> ranking = calculateRanking(answer.query, this.features);
-                    answer.score = cosinus(ranking, this.featuresVectors);
-                    return answer;
-                })
-                .sorted((a1, a2) -> a2.score.compareTo(a1.score))
-                .collect(Collectors.toList());
+            .stream()
+            .map(answer -> {
+                Map<String, Double> ranking = calculateRanking(answer.query, this.features);
+                answer.score = cosinus(ranking, this.featuresVectors);
+                return answer;
+            })
+            .sorted((a1, a2) -> a2.score.compareTo(a1.score))
+            .collect(Collectors.toList());
     }
 
 
     private Map<String, Double> generateFeaturesVector(final Collection<Feature> features) {
         Set<SPARQLQuery> queries = FeatureBasedRankerDB.readRankings();
         Stream<Map<String, Double>> rankings = queries
-                .stream()
-                .map(q -> calculateRanking(q, features));
+            .stream()
+            .map(q -> calculateRanking(q, features));
 
         HashMap<String, Double> featuresVector = Maps.newHashMap();
         rankings.forEach(ranking -> ranking
-                        .keySet()
-                        .forEach(feature -> {
-                            Double featureScore = ranking.get(feature);
-                            Double updatedScore = featuresVector.containsKey(feature) ?
-                                    featureScore + featuresVector.get(feature) :
-                                    featureScore;
-                            featuresVector.put(feature, updatedScore);
-                        })
-                );
+            .keySet()
+            .forEach(feature -> {
+                Double featureScore = ranking.get(feature);
+                Double updatedScore = featuresVector.containsKey(feature) ?
+                        featureScore + featuresVector.get(feature) :
+                        featureScore;
+                featuresVector.put(feature, updatedScore);
+            })
+        );
         return featuresVector;
     }
 

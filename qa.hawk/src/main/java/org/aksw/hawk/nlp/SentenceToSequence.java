@@ -33,7 +33,7 @@ public class SentenceToSequence {
 				tokenOffset = wordCounter;
 			}
 
-			// look for start "RB|JJ|NN(.)*"
+			// look for build "RB|JJ|NN(.)*"
 			if (subsequence.isEmpty() && (null != pos) && pos.matches("CD|JJ|NN(.)*|RB(.)*")) {
 				subsequence.add(token);
 			}
