@@ -15,7 +15,7 @@ import org.slf4j.LoggerFactory;
 
 import com.google.common.collect.Sets;
 
-public class RecursiveSparqlQueryBuilder {
+public class SparqlQueryBuilder {
 	Logger log = LoggerFactory.getLogger(RecursiveSparqlQueryBuilder.class);
 
 	public Set<SPARQLQuery> start(final SPARQLQueryBuilder sparqlQueryBuilder, final HAWKQuestion q) {
