@@ -46,6 +46,7 @@ public class SentenceToSequence {
 				tokenOffset = wordCounter;
 			}
 
+
 			// look for start "RB|JJ|NN(.)*"
 			//add JJS to the list AND add a new condition to prevent addding many|much|old
 			if (subsequence.isEmpty() && (null != pos) && (( pos.matches("CD|NN(.)*|RB(.)*")) || (pos.matches("JJ(.)*") && !token.matches("many|much|old") )  )) {
@@ -54,6 +55,7 @@ public class SentenceToSequence {
 			
 			else if (!subsequence.isEmpty() && (null != pos) && lastPos.matches("JJ(.)*|HYPH|NN(.)*") && pos.matches("VB(.)*|IN|WDT") && (null != nextPos) && nextPos.matches("NN(.)*") )
 			{
+
 				subsequence.add(token);
 			}
 			// split "of the" or "of all" or "against" via pos_i=IN and

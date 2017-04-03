@@ -1,0 +1,13 @@
+<component name="libraryTable">
+  <library name="Maven: org.aksw.qa:annotation:0.2.0-SNAPSHOT">
+    <CLASSES>
+      <root url="jar://$MAVEN_REPOSITORY$/org/aksw/qa/annotation/0.2.0-SNAPSHOT/annotation-0.2.0-20170109.171051-3.jar!/" />
+    </CLASSES>
+    <JAVADOC>
+      <root url="jar://$MAVEN_REPOSITORY$/org/aksw/qa/annotation/0.2.0-SNAPSHOT/annotation-0.2.0-20170109.171051-3-javadoc.jar!/" />
+    </JAVADOC>
+    <SOURCES>
+      <root url="jar://$MAVEN_REPOSITORY$/org/aksw/qa/annotation/0.2.0-SNAPSHOT/annotation-0.2.0-20170109.171051-3-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>

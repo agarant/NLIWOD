@@ -76,7 +76,7 @@ public class WebController {
 		q.getLanguageToQuestion().put("en", question);
 		q.setUUID(IdGenerator.generateId());
 
-		// start the search process
+		// build the search process
 		Future<HAWKQuestion> report = asyncSearchExecutor.search(q);
 
 		// put it to queue to fetch while long lasting processing

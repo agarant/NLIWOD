@@ -71,7 +71,7 @@ public class DBOIndex {
 	public ArrayList<String> search(final String object) {
 		ArrayList<String> uris = Lists.newArrayList();
 		try {
-			log.debug("\t start asking index...");
+			log.debug("\t build asking index...");
 
 			// remove hyphens assertTrue
 			// if (object.contains("-")) {

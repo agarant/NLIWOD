@@ -1,15 +1,6 @@
 package org.aksw.hawk.ranking;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
+import com.google.common.collect.Maps;
 import org.aksw.hawk.datastructures.Answer;
 import org.aksw.hawk.datastructures.HAWKQuestion;
 import org.aksw.qa.commons.datastructure.IQuestion;
@@ -18,7 +9,7 @@ import org.apache.jena.rdf.model.RDFNode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.common.collect.Maps;
+import java.util.*;
 
 public class FeatureBasedRanker implements Ranking {
 	public enum Feature {

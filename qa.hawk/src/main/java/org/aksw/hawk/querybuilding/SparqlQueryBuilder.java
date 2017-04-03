@@ -1,6 +1,7 @@
 package org.aksw.hawk.querybuilding;
 
-import java.util.Set;
+
+import com.google.common.collect.Sets;
 
 import org.aksw.hawk.datastructures.HAWKQuestion;
 import org.aksw.hawk.nlp.MutableTreeNode;
@@ -13,12 +14,14 @@ import org.apache.jena.query.ResultSet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.common.collect.Sets;
+
+import java.util.Set;
 
 public class SparqlQueryBuilder {
-	Logger log = LoggerFactory.getLogger(RecursiveSparqlQueryBuilder.class);
+	private static Logger log = LoggerFactory.getLogger(SparqlQueryBuilder.class);
 
-	public Set<SPARQLQuery> start(final SPARQLQueryBuilder sparqlQueryBuilder, final HAWKQuestion q) {
+	public static Set<SPARQLQuery> build(final HAWKQuestion q) {
+
 		SPARQLQuery initialQuery = new SPARQLQuery();
 		initialQuery.isASKQuery(q.getIsClassifiedAsASKQuery());
 		Set<SPARQLQuery> returnSet = Sets.newHashSet(initialQuery);
@@ -34,7 +37,8 @@ public class SparqlQueryBuilder {
 		return returnSet;
 	}
 
-	private void recursion(Set<SPARQLQuery> returnSet, Set<String> variableSet, MutableTreeNode tmp) throws CloneNotSupportedException {
+	private static void recursion(Set<SPARQLQuery> returnSet, Set<String> variableSet, MutableTreeNode tmp) throws CloneNotSupportedException {
+
 		Set<SPARQLQuery> sb = Sets.newHashSet();
 
 		// if no annotations maybe a CombinedNN
@@ -120,7 +124,7 @@ public class SparqlQueryBuilder {
 					variant2.addFilterOverAbstractsContraint("?const", tmp.label);
 
 					SPARQLQuery variant3 = (SPARQLQuery) query.clone();
-					variant2.addConstraint("?proj  ?proot  ?const.");					
+
 
 					sb.add(variant1);
 					sb.add(variant2);
@@ -202,7 +206,9 @@ public class SparqlQueryBuilder {
 
 	// TODO refactor to use SPAQRL.java instead of creating a stand-alone
 	// execution factory
-	private Set<String> getOrigLabel(final String label) {
+
+	private static Set<String> getOrigLabel(final String label) {
+
 		Set<String> resultset = Sets.newHashSet();
 		String query = "SELECT str(?proj)  WHERE { <" + label + "> <http://www.w3.org/2000/01/rdf-schema#label> ?proj. FILTER(langMatches( lang(?proj), \"EN\" ))}";
 		try {

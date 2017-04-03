@@ -1,11 +1,7 @@
 package org.aksw.hawk.experiment;
 
-import java.io.IOException;
-import java.util.List;
-import java.util.Set;
-
-import javax.xml.parsers.ParserConfigurationException;
-
+import com.google.common.base.Joiner;
+import com.google.common.collect.Sets;
 import org.aksw.hawk.controller.AbstractPipeline;
 import org.aksw.hawk.controller.EvalObj;
 import org.aksw.hawk.controller.PipelineStanford;
@@ -20,8 +16,11 @@ import org.aksw.qa.commons.sparql.SPARQLQuery;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.common.base.Joiner;
-import com.google.common.collect.Sets;
+import javax.xml.parsers.ParserConfigurationException;
+import java.io.IOException;
+import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * F@N + all ranking experiments for ESWC 2015 publication Possibly extendible
@@ -39,11 +38,20 @@ public class TrainingPipeline {
 		AbstractPipeline pipeline = new PipelineStanford();
 
 		log.info("Loading dataset");
-		List<HAWKQuestion> questions = HAWKQuestionFactory.createInstances(LoaderController.load(Dataset.QALD6_Train_Multilingual));
+		List<HAWKQuestion> questions = HAWKQuestionFactory.createInstances(LoaderController.load(Dataset.QALD6_Train_Hybrid));
 
 		double average = 0;
 		double count = 0;
 		double countNULLAnswer = 0;
+		OptimalRanker optimal_ranker_1 = new OptimalRanker();
+		List<List<Answer>> rankedAnswers = questions
+			.stream()
+			.map(q -> optimal_ranker_1.rank(pipeline.getAnswersToQuestion(q), q))
+			.peek(answers -> {
+				int a  =2;
+			})
+			.collect(Collectors.toList());
+
 		for (HAWKQuestion q : questions) {
 			if ((q.getAnswerType().equals("resource") & q.getOnlydbo() & !q.getAggregation()) || q.getLoadedAsASKQuery()) {
 				log.info("Run pipeline on " + q.getLanguageToQuestion().get("en"));

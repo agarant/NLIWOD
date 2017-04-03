@@ -1,25 +1,6 @@
 package org.aksw.hawk.controller;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Properties;
-import java.util.Set;
-
-import org.aksw.hawk.datastructures.HAWKQuestion;
-import org.aksw.hawk.nlp.MutableTree;
-import org.aksw.hawk.nlp.MutableTreeNode;
-import org.aksw.hawk.number.UnitController;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import edu.stanford.nlp.ling.CoreAnnotations.IndexAnnotation;
-import edu.stanford.nlp.ling.CoreAnnotations.PartOfSpeechAnnotation;
-import edu.stanford.nlp.ling.CoreAnnotations.SentencesAnnotation;
-import edu.stanford.nlp.ling.CoreAnnotations.TextAnnotation;
-import edu.stanford.nlp.ling.CoreAnnotations.TokensAnnotation;
+import edu.stanford.nlp.ling.CoreAnnotations.*;
 import edu.stanford.nlp.ling.CoreLabel;
 import edu.stanford.nlp.ling.IndexedWord;
 import edu.stanford.nlp.pipeline.Annotation;
@@ -28,6 +9,14 @@ import edu.stanford.nlp.semgraph.SemanticGraph;
 import edu.stanford.nlp.semgraph.SemanticGraphCoreAnnotations.CollapsedCCProcessedDependenciesAnnotation;
 import edu.stanford.nlp.semgraph.SemanticGraphEdge;
 import edu.stanford.nlp.util.CoreMap;
+import org.aksw.hawk.datastructures.HAWKQuestion;
+import org.aksw.hawk.nlp.MutableTree;
+import org.aksw.hawk.nlp.MutableTreeNode;
+import org.aksw.hawk.number.UnitController;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.util.*;
 
 /**
  * This class is a Connector between HAWK and StanfordNLP Usage: Either pass a
@@ -48,7 +37,7 @@ public class StanfordNLPConnector {
 	private Set<IndexedWord> visitedNodes;
 	public static StringBuilder out = new StringBuilder();
 	private static Logger log = LoggerFactory.getLogger(StanfordNLPConnector.class);
-	private static final String STANFORD_IP = "139.18.2.164";
+	private static final String STANFORD_IP = "127.0.0.1";
 	private static final int STANFORD_PORT = 9000;
 	private static final int USED_CORES = 4;
 

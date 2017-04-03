@@ -57,7 +57,7 @@ public class WikipediaPatternsConfidence_Index {
 		try {
 			File indexDir = new File("resources/WikipediaPatternsConfidenceIndex");
 			analyzer = new WhitespaceAnalyzer(LUCENE_VERSION);
-			// if no index exists, start by creating one
+			// if no index exists, build by creating one
 			if (!indexDir.exists()) {
 				indexDir.mkdir();
 				IndexWriterConfig config = new IndexWriterConfig(LUCENE_VERSION, analyzer);
