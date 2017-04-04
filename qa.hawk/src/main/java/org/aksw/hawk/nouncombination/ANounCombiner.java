@@ -59,8 +59,51 @@ abstract class ANounCombiner {
 			return;
 		}
 
-		for (Entity it : entityList) {
+		for (Entity it : entityList) 
+		   {
+                     String ent = it.getUris().get(0).getURI();
+                     Stack<MutableTreeNode> stack = new Stack<>();
+	 	     stack.push(tree.getRoot());
+		     Set<MutableTreeNode> removables = new HashSet<>();
+                     if (ent.contains("http://dbpedia.org/resource"))
+                        {
+                           String ADDUri = Joiner.on(" ").join(it.getUris().get(0).getURI().replace("http://dbpedia.org/resource/", "").split("_"));
+			   List<String> subsequenceADD = Arrays.asList(ADDUri.split(" "));
+			   String ADD = it.getUris().get(0).getURI().trim();
+			   while (!stack.isEmpty()) 
+			       {
+				MutableTreeNode thisNode = stack.pop();
+				String label = thisNode.label;
+				for (String iterator : subsequenceADD) 
+				{
+				   if (label.toLowerCase().equals(iterator.toLowerCase()) && (thisNode.getLabelPosition() >= it.getOffset()) && (thisNode.getLabelPosition() <= (it.getOffset() + subsequenceADD.size()))) 
+				      {
+					  thisNode.label = ADD;
+					  thisNode.posTag = "ADD";
+					  thisNode.lemma = ADD;
+					  if (!thisNode.equals(tree.getRoot())) 
+					     {
+						if (thisNode.parent.getLabel() == ADD)  {removables.add(thisNode);  }
+					   for (MutableTreeNode pathNode : tree.getPathToRoot(thisNode)) 
+					       {
+						  if (pathNode.getLabel() == ADD) { removables.add(thisNode); }
+						}
 
+					  List<MutableTreeNode> sameDepth = tree.getAllNodesWithDepth(thisNode.getDepth());
+					  sameDepth.remove(thisNode);
+   					 for (MutableTreeNode sameDepthNode : sameDepth) 
+					    {
+						if (sameDepthNode.getLabel() == ADD) { removables.add(thisNode); }
+							}
+						}
+					}
+				}
+
+				      for (MutableTreeNode child : thisNode.getChildren()) { stack.push(child); }
+			}
+}
+		else
+		{
 			String combinedNN = Joiner.on(" ").join(it.getUris().get(0).getURI().replace("http://aksw.org/combinedNN/", "").split("_"));
 			List<String> subsequence = Arrays.asList(combinedNN.split(" "));
 
@@ -117,7 +160,7 @@ abstract class ANounCombiner {
 				for (MutableTreeNode child : thisNode.getChildren()) {
 					stack.push(child);
 				}
-
+			}
 			}
 			for (MutableTreeNode m : removables) {
 				Log.debug(ANounCombiner.class, "Removing node " + m.nodeNumber + ": " + m.toString());
