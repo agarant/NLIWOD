@@ -12,7 +12,11 @@ import org.apache.jena.query.ResultSet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class SparqlQueryBuilder {
 	private static Logger log = LoggerFactory.getLogger(SparqlQueryBuilder.class);
@@ -32,22 +36,44 @@ public class SparqlQueryBuilder {
 		return returnSet;
 	}
 
+	private static List<String> buildQueriesFromAnnotations(List<String> annotations, MutableTreeNode node) {
+    return annotations
+      .stream()
+      .map(annotation -> {
+        if (node.posTag.matches("VB(.)*")) {
+          return new Stream.of(
+            "?proj <" + annotation + "> ?const.",
+            "?const <" + annotation + "> ?proj.",
+            "?const ?proot ?proj."
+          );
+        }
+        return new ArrayList<>();
+      })
+      .flatMap(l -> l.stream())
+      .collect(Collectors.toList());
+  }
+
 	private static void recursion(Set<SPARQLQuery> returnSet, Set<String> variableSet, MutableTreeNode tmp) throws CloneNotSupportedException {
 		Set<SPARQLQuery> sb = Sets.newHashSet();
 
 		// if no annotations maybe a CombinedNN
 		if (!tmp.getAnnotations().isEmpty()) {
 			for (SPARQLQuery query : returnSet) {
-				for (String anno : tmp.getAnnotations()) {
+				for (String annotation : tmp.getAnnotations()) {
 					// FIXME anno sometimes "", why is the annotation sometimes
 					// empty
 					if (tmp.posTag.matches("VB(.)*")) {
-						// FIXME variablen iterieren
+						String[] queryFragments = new String[]{
+              "?proj <" + annotation + "> ?const.",
+              "?const <" + annotation + "> ?proj.",
+              "?const ?proot ?proj."
+            };
+
 						SPARQLQuery variant1 = ((SPARQLQuery) query.clone());
-						variant1.addConstraint("?proj <" + anno + "> ?const.");
+						variant1.addConstraint("?proj <" + annotation + "> ?const.");
 
 						SPARQLQuery variant2 = ((SPARQLQuery) query.clone());
-						variant2.addConstraint("?const <" + anno + "> ?proj.");
+						variant2.addConstraint("?const <" + annotation + "> ?proj.");
 
 						SPARQLQuery variant3 = ((SPARQLQuery) query.clone());
 						// variant3.addConstraint("?const ?proot ?proj.");
@@ -63,13 +89,13 @@ public class SparqlQueryBuilder {
 						// "> ?const.");
 
 						SPARQLQuery variant2 = ((SPARQLQuery) query.clone());
-						variant2.addConstraint("?const <" + anno + "> ?proj.");
+						variant2.addConstraint("?const <" + annotation + "> ?proj.");
 
 						SPARQLQuery variant3 = ((SPARQLQuery) query.clone());
-						variant3.addConstraint("?const a <" + anno + ">.");
+						variant3.addConstraint("?const a <" + annotation + ">.");
 
 						SPARQLQuery variant4 = ((SPARQLQuery) query.clone());
-						variant4.addConstraint("?proj a <" + anno + ">.");
+						variant4.addConstraint("?proj a <" + annotation + ">.");
 
 						SPARQLQuery variant5 = ((SPARQLQuery) query.clone());
 						variant5.addFilterOverAbstractsContraint("?proj", tmp.label);
@@ -89,10 +115,10 @@ public class SparqlQueryBuilder {
 
 					} else if (tmp.posTag.matches("WP")) {
 						SPARQLQuery variant1 = ((SPARQLQuery) query.clone());
-						variant1.addConstraint("?const a <" + anno + ">.");
+						variant1.addConstraint("?const a <" + annotation + ">.");
 
 						SPARQLQuery variant2 = ((SPARQLQuery) query.clone());
-						variant2.addConstraint("?proj a <" + anno + ">.");
+						variant2.addConstraint("?proj a <" + annotation + ">.");
 
 						SPARQLQuery variant3 = ((SPARQLQuery) query.clone());
 
