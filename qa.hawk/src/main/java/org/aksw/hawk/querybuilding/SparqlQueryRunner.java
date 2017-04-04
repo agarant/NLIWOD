@@ -1,10 +1,12 @@
 package org.aksw.hawk.querybuilding;
 
+
 import org.aksw.hawk.datastructures.Answer;
 import org.aksw.qa.commons.sparql.SPARQL;
 import org.aksw.qa.commons.sparql.SPARQLQuery;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
 
 import java.util.Collection;
 import java.util.List;
@@ -35,5 +37,6 @@ public class SparqlQueryRunner {
     a.queryString = queryString;
     return a;
   }
+
 
 }
