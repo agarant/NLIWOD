@@ -11,10 +11,8 @@ import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-public class FeatureBasedRankerV2 implements Ranking, Ranker {
-    private static Logger log = LoggerFactory.getLogger(FeatureBasedRankerV2.class);
-
-
+public class FeatureBasedRankerV2 implements Ranking {
+  private static Logger log = LoggerFactory.getLogger(FeatureBasedRankerV2.class);
 
   public enum Feature {
         PREDICATES,
@@ -36,7 +34,6 @@ public class FeatureBasedRankerV2 implements Ranking, Ranker {
         this.featuresVectors = generateFeaturesVector(features);
     }
 
-  @Override
   public SortedMap<Double, List<SPARQLQuery>> rank(HAWKQuestion q, List<SPARQLQuery> queries) {
     SortedMap<Double, List<SPARQLQuery>> sortingBucket = new TreeMap<>();
     queries.forEach(query -> {

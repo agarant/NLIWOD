@@ -1,16 +1,15 @@
 package org.aksw.hawk.nlp;
 
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.Queue;
-
+import com.google.common.collect.Lists;
+import com.google.common.collect.Queues;
 import org.aksw.hawk.datastructures.HAWKQuestion;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.common.collect.Lists;
-import com.google.common.collect.Queues;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.Queue;
 
 public class MutableTreePruner {
 	Logger log = LoggerFactory.getLogger(MutableTreePruner.class);
@@ -92,38 +91,8 @@ public class MutableTreePruner {
 	 * Who,Where WP|WRB stays in
 	 */
 	private void removalRules(final HAWKQuestion q) {
-		for (String posTag : Lists.newArrayList("WRB","WDT","WP", "VBD", "VBZ", "VBP", "VB", "JJ", "\"", "'", "''", "SYM", "EX")) 
-		{
-			Queue<MutableTreeNode> queue = Queues.newLinkedBlockingQueue();
-			queue.add(root);
-			while (!queue.isEmpty()) 
-			{
-				MutableTreeNode tmp = queue.poll();
-				// remove stopWords if they have POS tag belongs to stopWordsPosTag
-				if (tmp.posTag.matches(posTag) && (tmp.label.equals("where") || tmp.label.equals("when") || tmp.label.equals("who") || tmp.label.equals("how")|| tmp.label.equals("what")||
-				tmp.label.equals("Where") || tmp.label.equals("When") || tmp.label.equals("Who") || tmp.label.equals("How")|| tmp.label.equals("What")||
-				tmp.label.equals("is") || tmp.label.equals("are") || 
-				tmp.label.equals("Is") || tmp.label.equals("Are") || 
-				tmp.label.equals("was") || tmp.label.equals("were") ||
-				tmp.label.equals("Was") || tmp.label.equals("Were") ||		
-                                tmp.label.equals("does") || tmp.label.equals("did") || tmp.label.equals("do") || 
-                                tmp.label.equals("Does") || tmp.label.equals("Did") || tmp.label.equals("Do") || 
-				tmp.label.equals("has") || tmp.label.equals("had") || tmp.label.equals("have") ||
-				tmp.label.equals("Has") || tmp.label.equals("Had") || tmp.label.equals("Have") ||
-                                tmp.label.equals("many") || tmp.label.equals("much") || tmp.label.equals("old") ||
-                                tmp.label.equals("Many") || tmp.label.equals("Much") || tmp.label.equals("Old") ||
-				tmp.label.equals("\"") || tmp.label.equals("''") || tmp.label.equals("there")) )
-				 {
-					q.getTree().remove(tmp);
-				 }
-				 for (MutableTreeNode n : tmp.getChildren()) 
-				 {
-					queue.add(n);
-				 }
-			}
-		}
 		MutableTreeNode root = q.getTree().getRoot();
-		for (String posTag : Lists.newArrayList(".", "WDT", "POS", "WP\\$", "PRP\\$", "RB", "PRP", "DT", "IN", "PDT", "TO","WRB","WP","CC")) {
+		for (String posTag : Lists.newArrayList(".", "WDT", "POS", "WP\\$", "PRP\\$", "RB", "PRP", "DT", "IN", "PDT")) {
 			Queue<MutableTreeNode> queue = Queues.newLinkedBlockingQueue();
 			queue.add(root);
 			while (!queue.isEmpty()) {
