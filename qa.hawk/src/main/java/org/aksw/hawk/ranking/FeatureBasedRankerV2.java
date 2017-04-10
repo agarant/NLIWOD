@@ -190,7 +190,8 @@ public class FeatureBasedRankerV2 implements Ranking {
             split = triple.split(" ");
             String subject = split[0];
             String predicate = split[1];
-            String object = split[2];
+            String object = split[2].endsWith(".")
+              ? split[2].substring(0,  split[2].length()-1) : split[2];
             if (subject.equals(textNode) && predicate.startsWith("?") && object.startsWith("?")) {
                 String key = "textNode_?var_?var";
                 addOneToMapAtKey(map, key);
