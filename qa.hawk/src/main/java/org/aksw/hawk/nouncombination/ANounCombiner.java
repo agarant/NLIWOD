@@ -6,7 +6,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.Stack;
-import java.lang.*;
 
 import org.aksw.hawk.datastructures.HAWKQuestion;
 import org.aksw.hawk.nlp.MutableTree;
@@ -53,61 +52,15 @@ abstract class ANounCombiner {
 
 	protected static void processTree(final HAWKQuestion q) {
 		MutableTree tree = q.getTree();
-		// get all phrases from getLanguageToNounPhrases(), which contains Combined phrases and Named entities
+
 		Map<String, List<Entity>> entities = q.getLanguageToNounPhrases();
 		List<Entity> entityList = entities.get("en");
-		
 		if (entityList == null) {
 			return;
 		}
 
-		for (Entity it : entityList) 
-		   {
-                     String ent = it.getUris().get(0).getURI();
-                     Stack<MutableTreeNode> stack = new Stack<>();
-	 	     stack.push(tree.getRoot());
-		     Set<MutableTreeNode> removables = new HashSet<>();
-		     // check if it is a Named entity or  a Phrase combination to assigne the proper POS tag 
+		for (Entity it : entityList) {
 
-                     if (ent.contains("http://dbpedia.org/resource"))
-                        {
-                           String ADDUri = Joiner.on(" ").join(it.getUris().get(0).getURI().replace("http://dbpedia.org/resource/", "").split("_"));
-			   List<String> subsequenceADD = Arrays.asList(ADDUri.split(" "));
-			   String ADD = it.getUris().get(0).getURI().trim();
-			   while (!stack.isEmpty()) 
-			       {
-				MutableTreeNode thisNode = stack.pop();
-				String label = thisNode.label;
-				for (String iterator : subsequenceADD) 
-				{
-				   if (label.toLowerCase().equals(iterator.toLowerCase()) && (thisNode.getLabelPosition() >= it.getOffset()) && (thisNode.getLabelPosition() <= (it.getOffset() + subsequenceADD.size()))) 
-				      {
-					  thisNode.label = ADD;
-					  thisNode.posTag = "ADD";
-					  thisNode.lemma = ADD;
-					  if (!thisNode.equals(tree.getRoot())) 
-					     {
-						if (thisNode.parent.getLabel() == ADD)  {removables.add(thisNode);  }
-					   for (MutableTreeNode pathNode : tree.getPathToRoot(thisNode)) 
-					       {
-						  if (pathNode.getLabel() == ADD) { removables.add(thisNode); }
-						}
-
-					  List<MutableTreeNode> sameDepth = tree.getAllNodesWithDepth(thisNode.getDepth());
-					  sameDepth.remove(thisNode);
-   					 for (MutableTreeNode sameDepthNode : sameDepth) 
-					    {
-						if (sameDepthNode.getLabel() == ADD) { removables.add(thisNode); }
-							}
-						}
-					}
-				}
-
-				      for (MutableTreeNode child : thisNode.getChildren()) { stack.push(child); }
-			}
-}
-		else
-		{
 			String combinedNN = Joiner.on(" ").join(it.getUris().get(0).getURI().replace("http://aksw.org/combinedNN/", "").split("_"));
 			List<String> subsequence = Arrays.asList(combinedNN.split(" "));
 
@@ -164,7 +117,7 @@ abstract class ANounCombiner {
 				for (MutableTreeNode child : thisNode.getChildren()) {
 					stack.push(child);
 				}
-			}
+
 			}
 			for (MutableTreeNode m : removables) {
 				Log.debug(ANounCombiner.class, "Removing node " + m.nodeNumber + ": " + m.toString());
@@ -176,46 +129,9 @@ abstract class ANounCombiner {
 	}
 
 	protected static void setEntity(final List<String> subsequence, final HAWKQuestion q, final int subsequenceStartOffset) {
-		// if there are proper nouns that are not combined, they will combined
-		// but check if the combination matches a recognized Named entity
-		// in this case it will be treated as a NE
-		String subequencePhrase = ""+subsequence; 
-		subequencePhrase = subequencePhrase.replace(",","").replace("[","").replace("]","").trim(); 	
-                String combinedNN = "null";
-		String combinedURI = "null";		
-		Map<String, List<Entity>> NamedEntities = q.getLanguageToNamedEntites();
-                List<Entity> EnNamedEntities = NamedEntities.get("en");
-		String NEs = ""+EnNamedEntities;
-		NEs = NEs.trim();
-		
-		if (!NEs.matches("null") && !NEs.isEmpty())
-		{
-		   String NamedEntitiesList[] = NEs.split(","); 
-		   int  NamedEntitiesListLength = NamedEntitiesList.length;
-		   int counter = 0;
-		
-		   while (counter < NamedEntitiesListLength)
-		   {
-                        String NEList = NamedEntitiesList[counter];
-			NEList = NEList.replace("(","&");				
-			String NE[] = NEList.split("&");
-			String phrase = NE[0].replace("[","").trim();
-			String URI = NE[1].replace("uri:","").replace("; type: )","").replace("]","").trim();
-			if (subequencePhrase.toLowerCase().matches(phrase.toLowerCase()))
-			   {
-				 combinedNN =  phrase;
-				 combinedURI = URI;
-			   }
-			   counter++;
-		  }	
-			
-		}
+		String combinedNN = Joiner.on(" ").join(subsequence);
+		String combinedURI = "http://aksw.org/combinedNN/" + Joiner.on("_").join(subsequence);
 
-		if ((combinedNN.matches("null") || combinedNN.isEmpty() )&& (combinedURI.matches("null") || combinedURI.isEmpty()) ) 
-			   {
-                              combinedNN = Joiner.on(" ").join(subsequence);
-		              combinedURI = "http://aksw.org/combinedNN/" + Joiner.on("_").join(subsequence);
-			   }	
 		Entity tmpEntity = new Entity();
 		tmpEntity.setLabel(combinedNN);
 		tmpEntity.setOffset(subsequenceStartOffset);
