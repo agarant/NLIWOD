@@ -1,18 +1,19 @@
 package org.aksw.hawk.nlp;
 
+
+import com.google.common.collect.Lists;
+import com.google.common.collect.Queues;
+
+import org.aksw.hawk.datastructures.HAWKQuestion;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Queue;
 import java.util.List;
 import java.util.Arrays;
-
-import org.aksw.hawk.datastructures.HAWKQuestion;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import com.google.common.collect.Lists;
-import com.google.common.collect.Queues;
 
 public class MutableTreePruner {
 	Logger log = LoggerFactory.getLogger(MutableTreePruner.class);
@@ -94,8 +95,8 @@ public class MutableTreePruner {
 	private void removalRules(final HAWKQuestion q) {
 		MutableTreeNode root = q.getTree().getRoot();
 	        // List of words to be pruned
-		List<String> stopWords = Arrays.asList("where", "when", "how", "who","what" ,"is", "are", "was", "were", "does", "did","do", "has","had","have","many","much","old","\"","''"); // wed
-		for (String posTag : Lists.newArrayList(".", "WDT", "POS", "WP\\$", "PRP\\$", "RB", "PRP", "DT", "IN", "PDT", "TO","WRB","WP","CC")) {
+		List<String> stopWords = Arrays.asList("where", "when", "how", "who","what" ,"is", "are", "was", "were", "does", "did","do", "has","had","have","many","much","old","\"","''"); 
+		for (String posTag : Lists.newArrayList(".", "WDT", "POS", "WP\\$", "PRP\\$", "RB", "PRP", "DT", "IN", "PDT")) {
 			Queue<MutableTreeNode> queue = Queues.newLinkedBlockingQueue();
 			queue.add(root);
 			while (!queue.isEmpty()) {

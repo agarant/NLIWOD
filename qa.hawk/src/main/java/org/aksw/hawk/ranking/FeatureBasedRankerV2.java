@@ -11,10 +11,8 @@ import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-public class FeatureBasedRankerV2 implements Ranking, Ranker {
-    private static Logger log = LoggerFactory.getLogger(FeatureBasedRankerV2.class);
-
-
+public class FeatureBasedRankerV2 implements Ranking {
+  private static Logger log = LoggerFactory.getLogger(FeatureBasedRankerV2.class);
 
   public enum Feature {
         PREDICATES,
@@ -36,7 +34,6 @@ public class FeatureBasedRankerV2 implements Ranking, Ranker {
         this.featuresVectors = generateFeaturesVector(features);
     }
 
-  @Override
   public SortedMap<Double, List<SPARQLQuery>> rank(HAWKQuestion q, List<SPARQLQuery> queries) {
     SortedMap<Double, List<SPARQLQuery>> sortingBucket = new TreeMap<>();
     queries.forEach(query -> {
@@ -193,7 +190,8 @@ public class FeatureBasedRankerV2 implements Ranking, Ranker {
             split = triple.split(" ");
             String subject = split[0];
             String predicate = split[1];
-            String object = split[2];
+            String object = split[2].endsWith(".")
+              ? split[2].substring(0,  split[2].length()-1) : split[2];
             if (subject.equals(textNode) && predicate.startsWith("?") && object.startsWith("?")) {
                 String key = "textNode_?var_?var";
                 addOneToMapAtKey(map, key);
