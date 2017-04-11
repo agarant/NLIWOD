@@ -90,17 +90,17 @@ public class MutableTreePruner {
 	/**
 	 * removes: * punctuations (.) * wh- words(WDT|WP$) * PRP($) * DT * BY and
 	 * IN (possessive) pronouns * PDT predeterminer all both
-	 *
-	 * Who,Where WP|WRB stays in
 	 */
 	private void removalRules(final HAWKQuestion q) {
 		MutableTreeNode root = q.getTree().getRoot();
+	        // List of words to be pruned
+		List<String> stopWords = Arrays.asList("where", "when", "how", "who","what" ,"is", "are", "was", "were", "does", "did","do", "has","had","have","many","much","old","\"","''"); // wed
 		for (String posTag : Lists.newArrayList(".", "WDT", "POS", "WP\\$", "PRP\\$", "RB", "PRP", "DT", "IN", "PDT", "TO","WRB","WP","CC")) {
 			Queue<MutableTreeNode> queue = Queues.newLinkedBlockingQueue();
 			queue.add(root);
 			while (!queue.isEmpty()) {
 				MutableTreeNode tmp = queue.poll();
-				if (tmp.posTag.matches(posTag)) {
+				if (tmp.posTag.matches(posTag) || stopWords.contains(tmp.label.toLowerCase())) {
 					q.getTree().remove(tmp);
 				}
 				for (MutableTreeNode n : tmp.getChildren()) {
